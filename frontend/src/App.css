@@ -486,23 +486,34 @@ body {
 }
 
 .language-filter select {
-  padding: 0.6rem 1rem;
+  padding: 0.5rem 0.9rem;
   border-radius: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  /* make the control visually transparent while keeping readable text */
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
   color: var(--text-light);
   cursor: pointer;
   font-size: 0.9rem;
-  transition: all 0.3s ease;
-  backdrop-filter: blur(10px);
+  transition: border-color 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
+  /* subtle backdrop blur so the control feels glassy/translucent */
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  /* ensure the transparent look on low-opacity backgrounds */
+  background-clip: padding-box;
 }
 
 .language-filter select:hover,
 .language-filter select:focus {
-  border-color: #7c4dff;
-  background: rgba(124, 77, 255, 0.15);
+  border-color: rgba(124, 77, 255, 0.8);
+  background: rgba(124, 77, 255, 0.06);
   outline: none;
-  box-shadow: 0 0 15px rgba(124, 77, 255, 0.2);
+  box-shadow: 0 6px 24px rgba(124, 77, 255, 0.08);
+}
+
+/* Improve contrast for native option list on some platforms */
+.language-filter select option {
+  background: #0b1220; /* match app background for dropdown */
+  color: var(--text-light);
 }
 
 .song-count {
