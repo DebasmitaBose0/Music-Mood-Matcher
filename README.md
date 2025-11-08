@@ -264,3 +264,21 @@ Made with 🎶 and ❤️
 Last Updated: November 8, 2025
 Version: 1.0.0
 Status: Production Ready ✅
+
+## Contributors
+
+- Babin Bid — Lead Developer
+- Debasmita Bose — Developer and Idea Provider
+
+Both contributors collaborated on the design, implementation, and testing of the Music Mood Matcher web application. Babin led development, build and integration efforts; Debasmita conceived the idea, curated content and contributed to feature design and testing.
+
+## License
+
+This project is released under the MIT License. See the bundled `LICENSE` file for full terms. In short: you are free to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software under the conditions described in the license.
+
+For copyright purposes, the original contributors are:
+
+- Babin Bid
+- Debasmita Bose
+
+If you'd like a different license or additional contributor attributions (e.g., company name or organization), tell me and I will update the files.
