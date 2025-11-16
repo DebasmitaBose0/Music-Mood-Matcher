@@ -47,13 +47,13 @@ export default function Loader({ onDone, introDuration = 1200 }) {
   )
 }
 
-  Loader.propTypes = {
-    onDone: PropTypes.func,
-    // duration before calling onDone (ms)
-    introDuration: PropTypes.number,
-  }
+Loader.propTypes = {
+  onDone: PropTypes.func,
+  // duration before calling onDone (ms)
+  introDuration: PropTypes.number,
+}
 
-  Loader.defaultProps = {
-    onDone: undefined,
-    introDuration: 1200,
-  }
+Loader.defaultProps = {
+  onDone: undefined,
+  introDuration: 1200,
+}
