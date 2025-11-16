@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import { songs, moods } from './data/songs'
 import './App.css'
+import Loader from './components/Loader'
 
 function App() {
   const [currentMood, setCurrentMood] = useState(null)
@@ -21,6 +22,13 @@ function App() {
       return []
     }
   })
+
+  // Show an initial musical loader until it signals it's done
+  const [showLoader, setShowLoader] = useState(true)
+
+  function handleLoaderDone() {
+    setShowLoader(false)
+  }
 
   useEffect(() => {
     localStorage.setItem('musicMoodFavorites', JSON.stringify(favorites))
@@ -83,6 +91,9 @@ function App() {
       document.body.className = ''
     }
   }, [currentMood])
+
+  // If loader is active, render it full-screen before the app
+  if (showLoader) return <Loader onDone={handleLoaderDone} />
 
   return (
     <div className="app-root">
