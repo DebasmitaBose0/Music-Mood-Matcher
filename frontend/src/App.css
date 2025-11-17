@@ -346,7 +346,69 @@ body {
   color: #0b1220;
   font-weight: 700;
   box-shadow: 0 4px 20px rgba(124, 77, 255, 0.5);
-  transition: var(--transition);
+}
+
+/* User Section Styles */
+.nav-user-section {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.5rem 1rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(124, 77, 255, 0.2);
+  border-radius: 12px;
+  backdrop-filter: blur(10px);
+}
+
+.user-icon {
+  font-size: 1.1rem;
+}
+
+.user-name {
+  font-size: 0.9rem;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  background: linear-gradient(135deg, #7c4dff, #00e5ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.logout-btn {
+  padding: 0.4rem 0.8rem;
+  border: 1px solid rgba(255, 100, 100, 0.3);
+  background: rgba(255, 100, 100, 0.1);
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.logout-icon {
+  font-size: 1rem;
+}
+
+.logout-text {
+  color: #ff9999;
+}
+
+.logout-btn:hover {
+  background: rgba(255, 100, 100, 0.2);
+  border-color: rgba(255, 100, 100, 0.5);
+  box-shadow: 0 0 15px rgba(255, 100, 100, 0.2);
+  transform: translateY(-2px);
+}
+
+.logout-btn:hover .logout-text {
+  color: #ffcccc;
+}
+
+.logout-btn:active {
+  transform: translateY(0);
 }
 
 /* Main App Root */
@@ -490,7 +552,7 @@ body {
   border-radius: 10px;
   border: 1px solid rgba(255, 255, 255, 0.12);
   /* make the control visually transparent while keeping readable text */
-  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0.01));
   color: var(--text-light);
   cursor: pointer;
   font-size: 0.9rem;
@@ -512,7 +574,8 @@ body {
 
 /* Improve contrast for native option list on some platforms */
 .language-filter select option {
-  background: #0b1220; /* match app background for dropdown */
+  background: #0b1220;
+  /* match app background for dropdown */
   color: var(--text-light);
 }
 
@@ -547,14 +610,24 @@ body {
 .mood-title {
   font-size: 1.8rem;
   margin-bottom: 1.5rem;
-  background: linear-gradient(135deg, #FFD700, #00e5ff);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
   transition: var(--transition);
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 1px;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.mood-emoji-header {
+  font-size: 2rem;
+}
+
+.mood-text {
+  background: linear-gradient(135deg, #FFD700, #00e5ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 /* Songs Grid */
@@ -716,14 +789,91 @@ body {
 .tab-content h2 {
   font-size: 1.8rem;
   margin-bottom: 1rem;
-  background: linear-gradient(135deg, #FFD700, #00e5ff);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
   transition: var(--transition);
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 1px;
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.tab-emoji {
+  font-size: 2rem;
+}
+
+.tab-text {
+  background: linear-gradient(135deg, #FFD700, #00e5ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.header-emoji {
+  font-size: 1.5rem;
+}
+
+.header-text {
+  background: linear-gradient(135deg, #FFD700, #00e5ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.app-header h2 {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.feature-emoji {
+  font-size: 1.2rem;
+  min-width: 1.5rem;
+}
+
+.feature-text {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.made-emoji {
+  font-size: 1.1rem;
+  margin: 0 0.3rem;
+}
+
+.made-text {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.heart-emoji {
+  font-size: 1.1rem;
+  margin: 0 0.3rem;
+}
+
+.footer-emoji {
+  font-size: 1.3rem;
+  margin-right: 0.5rem;
+}
+
+.footer-text {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.footer-heart {
+  font-size: 1.2rem;
+  margin: 0 0.4rem;
+}
+
+.footer-main {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.footer-creators {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3rem;
 }
 
 .tab-subtitle {
@@ -924,8 +1074,9 @@ body.mood-happy .music-background {
     radial-gradient(circle at 80% 80%, rgba(255, 165, 0, 0.15) 0%, transparent 50%) !important;
 }
 
-body.mood-happy .mood-title,
-body.mood-happy .tab-content h2 {
+body.mood-happy .mood-text,
+body.mood-happy .tab-content h2 .tab-text,
+body.mood-happy .tab-text {
   color: #FFD700;
 }
 
@@ -939,8 +1090,9 @@ body.mood-sad .music-background {
     radial-gradient(circle at 80% 80%, rgba(135, 206, 235, 0.15) 0%, transparent 50%) !important;
 }
 
-body.mood-sad .mood-title,
-body.mood-sad .tab-content h2 {
+body.mood-sad .mood-text,
+body.mood-sad .tab-content h2 .tab-text,
+body.mood-sad .tab-text {
   color: #4a90e2;
 }
 
@@ -954,8 +1106,9 @@ body.mood-energetic .music-background {
     radial-gradient(circle at 80% 80%, rgba(255, 99, 71, 0.15) 0%, transparent 50%) !important;
 }
 
-body.mood-energetic .mood-title,
-body.mood-energetic .tab-content h2 {
+body.mood-energetic .mood-text,
+body.mood-energetic .tab-content h2 .tab-text,
+body.mood-energetic .tab-text {
   color: #FF6B6B;
 }
 
@@ -971,10 +1124,12 @@ body.mood-calm .music-background {
     radial-gradient(circle at 80% 80%, rgba(72, 209, 204, 0.15) 0%, transparent 50%) !important;
 }
 
-body.mood-chill .mood-title,
-body.mood-chill .tab-content h2,
-body.mood-calm .mood-title,
-body.mood-calm .tab-content h2 {
+body.mood-chill .mood-text,
+body.mood-chill .tab-content h2 .tab-text,
+body.mood-chill .tab-text,
+body.mood-calm .mood-text,
+body.mood-calm .tab-content h2 .tab-text,
+body.mood-calm .tab-text {
   color: #20B2AA;
 }
 
@@ -988,8 +1143,9 @@ body.mood-romantic .music-background {
     radial-gradient(circle at 80% 80%, rgba(255, 182, 193, 0.15) 0%, transparent 50%) !important;
 }
 
-body.mood-romantic .mood-title,
-body.mood-romantic .tab-content h2 {
+body.mood-romantic .mood-text,
+body.mood-romantic .tab-content h2 .tab-text,
+body.mood-romantic .tab-text {
   color: #FF1493;
 }
 
@@ -1003,8 +1159,9 @@ body.mood-angry .music-background {
     radial-gradient(circle at 80% 80%, rgba(255, 69, 0, 0.15) 0%, transparent 50%) !important;
 }
 
-body.mood-angry .mood-title,
-body.mood-angry .tab-content h2 {
+body.mood-angry .mood-text,
+body.mood-angry .tab-content h2 .tab-text,
+body.mood-angry .tab-text {
   color: #DC143C;
 }
 
