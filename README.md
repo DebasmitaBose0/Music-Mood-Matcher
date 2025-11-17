@@ -71,16 +71,17 @@ npm run lint     # Run ESLint
 - ![Songs](https://img.shields.io/badge/240%2B-Songs-brightgreen) **240+ Songs** - Curated collection across multiple languages
 - ![Moods](https://img.shields.io/badge/6-Moods-blueviolet) **6 Mood Categories** - Happy, Sad, Energetic, Romantic, Chill, Angry
 - ![Languages](https://img.shields.io/badge/3-Languages-yellow) **Multi-Language Support** - English, Hindi, Bengali
-- ![Favorites](https://img.shields.io/badge/Favorites%20System-Enabled-blue) **Favorites System** - Save and manage your favorite songs with localStorage
-- ![History](https://img.shields.io/badge/History%20Tracking-Active-informational) **Mood History** - Track your mood selections over time
+- ![Authentication](https://img.shields.io/badge/Authentication-User%20System-blue) **User Authentication** - Register/Sign-In system with email verification
+- ![User Data](https://img.shields.io/badge/User%20Data-Isolated-informational) **User-Specific Data** - Each user has isolated favorites and history
+- ![Favorites](https://img.shields.io/badge/Favorites%20System-Enabled-blue) **Favorites System** - Save and manage your favorite songs per user
+- ![History](https://img.shields.io/badge/History%20Tracking-Active-informational) **Mood History** - Track your mood selections over time (user-specific)
+- ![Email](https://img.shields.io/badge/Email%20Verification-Active-brightgreen) **Email Verification** - Verification code sent on registration
 - ![YouTube](https://img.shields.io/badge/YouTube-Integrated-red?logo=youtube) **YouTube Integration** - Click any song to open on YouTube
 - ![Animations](https://img.shields.io/badge/Animations-Framer%20Motion-purple) **Beautiful UI** - Modern design with Framer Motion animations
 - ![Responsive](https://img.shields.io/badge/Responsive-Mobile%20Ready-brightgreen) **Responsive Design** - Works seamlessly on desktop, tablet, and mobile
 - ![Filter](https://img.shields.io/badge/Filters-By%20Language-orange) **Language Filter** - Filter songs by language preference
-
----
-
-- ![Loader](https://img.shields.io/badge/Loader-Animated%20Intro-lightgrey) **Loader Page** - A short animated loader appears before the homepage (visual-only by default)
+- ![Loader](https://img.shields.io/badge/Loader-Animated%20Intro-lightgrey) **Loader Page** - Animated intro loader before main app
+- ![Session](https://img.shields.io/badge/Session-Security-brightgreen) **Session Security** - Auto-logout on server restart, must re-login
 
 ## 📊 Data Overview
 
@@ -107,6 +108,7 @@ Each song includes:
 - ![Framer Motion](https://img.shields.io/badge/Framer%20Motion-12.23.24-purple?logo=framer&logoColor=white&style=flat) **Framer Motion** (^12.23.24) - Animation library
 - ![React DOM](https://img.shields.io/badge/React%20DOM-19.1.1-blue?logo=react&logoColor=white&style=flat) **React DOM** (^19.1.1) - DOM rendering
 - ![Vite](https://img.shields.io/badge/Vite-7.1.7-646cff?logo=vite&logoColor=white&style=flat) **Vite** (^7.1.7) - Build tool and dev server
+- ![PropTypes](https://img.shields.io/badge/PropTypes-15.8.1-green?style=flat) **PropTypes** (^15.8.1) - Runtime type checking
 
 ### Dev Dependencies
 - ![ESLint](https://img.shields.io/badge/ESLint-9.36.0-4b3ddb?logo=eslint&logoColor=white&style=flat) **ESLint** (^9.36.0) - Code linting
@@ -154,13 +156,19 @@ Edit `frontend/src/App.jsx` to:
 
 The app uses browser's **localStorage** to save:
 
-1. **Favorites** - Key: `musicMoodFavorites`
-   - JSON array of favorite songs with IDs
+1. **User Accounts** - Key: `musicMoodUsers`
+   - JSON array of registered users with emails, names, verification codes, and login history
 
-2. **History** - Key: `musicMoodHistory`
-   - Array of mood selections with timestamps
+2. **Current Session** - Key: `musicMoodUser`
+   - Automatically cleared on server restart (requires re-login)
 
-Data persists across browser sessions automatically.
+3. **User Favorites** - Key: `musicMoodFavorites-{userId}`
+   - JSON array of favorite songs with IDs (per user)
+
+4. **User History** - Key: `musicMoodHistory-{userId}`
+   - Array of mood selections with timestamps (per user)
+
+Data persists across browser sessions automatically. Each user has completely isolated data.
 
 ---
 
@@ -217,14 +225,18 @@ vercel deploy
 
 ## 📝 File Descriptions
 
-| File | Purpose | Size |
-|------|---------|------|
-| `App.jsx` | Main React component with logic | 356 lines |
-| `App.css` | All styling and animations | ~400 lines |
-| `songs.js` | Song database for all moods | 277 lines |
-| `index.css` | Global styles | ~50 lines |
-| `main.jsx` | React app entry point | ~10 lines |
-| `vite.config.js` | Vite build configuration | ~20 lines |
+| File | Purpose | Size | Type |
+|------|---------|------|------|
+| `App.jsx` | Main React component with mood selection, favorites, and history logic | 428 lines | Component |
+| `Login.jsx` | Register/Sign-In authentication component with sliding transitions | 486 lines | Component |
+| `Loader.jsx` | Animated intro loader page | 356 lines | Component |
+| `AuthContext.jsx` | Authentication state management with useAuth hook | ~50 lines | Context |
+| `App.css` | All styling and animations (moods, cards, navbar, etc.) | ~1100 lines | Styles |
+| `login.css` | Authentication forms styling with animations | ~350 lines | Styles |
+| `loader.css` | Loader animation styles | ~250 lines | Styles |
+| `songs.js` | Song database for all moods and languages | 277 lines | Data |
+| `index.css` | Global styles | ~50 lines | Styles |
+| `main.jsx` | React app entry point with AuthProvider | ~10 lines | Entry |
 
 ---
 
@@ -238,7 +250,27 @@ vercel deploy
 
 ---
 
-## 📱 Browser Support
+## 🔐 Authentication System
+
+### User Registration
+1. User enters **Name** and **Email**
+2. Verification code generated and logged to console
+3. User account created with unique ID
+4. Auto-redirects to Home page
+
+### User Sign-In
+1. User enters registered **Email**
+2. System validates email against registered users
+3. User session restored with their favorites and history
+4. Auto-redirects to Home page
+
+### Session Security
+- Session data (`musicMoodUser`) is cleared on server restart
+- Users must re-login when accessing the app (no auto-login)
+- User accounts and history remain saved in localStorage
+- Each user's data is completely isolated by userId
+
+---
 
 ![Chrome](https://img.shields.io/badge/Chrome-Latest-green?logo=google-chrome&logoColor=white)
 ![Firefox](https://img.shields.io/badge/Firefox-Latest-orange?logo=firefox&logoColor=white)
@@ -299,8 +331,17 @@ This project is provided as-is for educational and personal use.
 
 ---
 
-## 🛠 Recent updates
+## 🛠 Recent Updates
+
+- **2025-11-17** — Major authentication overhaul:
+  - Implemented Register/Sign-In dual system with sliding transitions
+  - Added email verification on registration (code logged to console)
+  - User-specific favorites and history storage (isolated by userId)
+  - Auto-redirect to Home on login/user switch
+  - Session security: Auto-logout on server restart
+  - Cleaned up background: removed circles and frequency bars, kept only floating music icons
+  - Files added/updated: `frontend/src/components/Login.jsx`, `frontend/src/components/login.css`, `frontend/src/context/AuthContext.jsx`, `frontend/src/App.jsx`
 
 - **2025-11-15** — Inserted a new animated loader page shown before the homepage. The loader is visual-only by default (no autoplaying music). Files added/updated: `frontend/src/components/Loader.jsx`, `frontend/src/components/loader.css`. Audio experiments were performed earlier and then removed per request.
 
-Last Updated: November 15, 2025
+Last Updated: November 17, 2025
