@@ -401,7 +401,7 @@ function App() {
               </p>
               <p className="footer-creators">
                 <span className="footer-text">Created with</span>
-                <span className="footer-heart">💜</span>
+                <span className="footer-emoji">💜</span>
                 <span className="footer-text">by <strong>Babin Bid</strong> & <strong>Debasmita Bose</strong></span>
               </p>
             </div>

@@ -677,14 +677,25 @@ body {
 .tab-content h2 {
   font-size: 1.8rem;
   margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  transition: var(--transition);
+}
+
+.tab-emoji {
+  font-size: 2rem;
+  flex-shrink: 0;
+}
+
+.tab-text {
   background: linear-gradient(135deg, #FFD700, #00e5ff);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  transition: var(--transition);
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 1px;
 }
 
 .tab-subtitle {
@@ -886,8 +897,11 @@ body.mood-happy .music-background {
 }
 
 body.mood-happy .mood-title,
-body.mood-happy .tab-content h2 {
-  color: #FFD700;
+body.mood-happy .tab-content h2 .tab-text {
+  background: linear-gradient(135deg, #FFD700, #FFA500);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 /* Sad mood colors */
@@ -901,8 +915,11 @@ body.mood-sad .music-background {
 }
 
 body.mood-sad .mood-title,
-body.mood-sad .tab-content h2 {
-  color: #4a90e2;
+body.mood-sad .tab-content h2 .tab-text {
+  background: linear-gradient(135deg, #4a90e2, #87CEEB);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 /* Energetic mood colors */
@@ -916,8 +933,11 @@ body.mood-energetic .music-background {
 }
 
 body.mood-energetic .mood-title,
-body.mood-energetic .tab-content h2 {
-  color: #FF6B6B;
+body.mood-energetic .tab-content h2 .tab-text {
+  background: linear-gradient(135deg, #FF6B6B, #FF4500);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 /* Calm/Chill mood colors */
@@ -933,10 +953,13 @@ body.mood-calm .music-background {
 }
 
 body.mood-chill .mood-title,
-body.mood-chill .tab-content h2,
+body.mood-chill .tab-content h2 .tab-text,
 body.mood-calm .mood-title,
-body.mood-calm .tab-content h2 {
-  color: #20B2AA;
+body.mood-calm .tab-content h2 .tab-text {
+  background: linear-gradient(135deg, #20B2AA, #48D1CC);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 /* Romantic mood colors */
@@ -950,8 +973,11 @@ body.mood-romantic .music-background {
 }
 
 body.mood-romantic .mood-title,
-body.mood-romantic .tab-content h2 {
-  color: #FF1493;
+body.mood-romantic .tab-content h2 .tab-text {
+  background: linear-gradient(135deg, #FF1493, #FFB6C1);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 /* Angry mood colors */
@@ -965,8 +991,11 @@ body.mood-angry .music-background {
 }
 
 body.mood-angry .mood-title,
-body.mood-angry .tab-content h2 {
-  color: #DC143C;
+body.mood-angry .tab-content h2 .tab-text {
+  background: linear-gradient(135deg, #DC143C, #FF0000);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 
