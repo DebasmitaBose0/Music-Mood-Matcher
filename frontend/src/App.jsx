@@ -87,6 +87,19 @@ function App() {
     angry: '😤'
   }
 
+  const getGenderAvatar = (gender) => {
+    switch (gender) {
+      case 'male':
+        return '👨'
+      case 'female':
+        return '👩'
+      case 'other':
+        return '🧑'
+      default:
+        return '👤'
+    }
+  }
+
   const moodColors = {
     happy: { primary: '#FFD700', accent: '#FFA500', rgb: '255, 215, 0' },
     sad: { primary: '#4169E1', accent: '#87CEEB', rgb: '65, 105, 225' },
@@ -159,7 +172,10 @@ function App() {
                 </button>
               </div>
               <div className="nav-user-section">
-                <span className="user-icon">👤</span>
+                <div className="user-avatar">
+                  <span className="avatar-icon">{getGenderAvatar(user?.gender)}</span>
+                  <span className="user-badge">{user?.gender.charAt(0).toUpperCase()}</span>
+                </div>
                 <span className="user-name">{user?.userName}</span>
                 <button className="logout-btn" onClick={logout} title="Logout">
                   <span className="logout-icon">🚪</span>
