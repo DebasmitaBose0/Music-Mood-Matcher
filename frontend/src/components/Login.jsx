@@ -10,6 +10,8 @@ export default function Login({ onLoginSuccess }) {
     const [registeredUsers, setRegisteredUsers] = useState([])
     const [error, setError] = useState('')
     const [isLoading, setIsLoading] = useState(false)
+    const [showConflictDialog, setShowConflictDialog] = useState(false)
+    const [existingUser, setExistingUser] = useState(null)
 
     // Load registered users from localStorage on mount
     useEffect(() => {
@@ -115,9 +117,16 @@ export default function Login({ onLoginSuccess }) {
         }
 
         // Check if email already registered
-        if (registeredUsers.some(u => u.email === registerData.email)) {
-            setError('This email is already registered. Please sign in instead.')
-            return
+        const existing = registeredUsers.find(u => u.email === registerData.email)
+        if (existing) {
+            if (existing.userName !== registerData.userName || existing.gender !== registerData.gender) {
+                setExistingUser(existing)
+                setShowConflictDialog(true)
+                return
+            } else {
+                setError('This email is already registered. Please sign in instead.')
+                return
+            }
         }
 
         setIsLoading(true)
@@ -225,35 +234,6 @@ export default function Login({ onLoginSuccess }) {
                     <h1>Music Mood Matcher</h1>
                     <p className="header-subtitle">Find Your Perfect Song</p>
                 </motion.div>
-
-                {/* Animated Decorative Elements */}
-                <div className="decorative-bars">
-                    <motion.div
-                        className="bar"
-                        animate={{ height: ['20px', '40px', '20px'] }}
-                        transition={{ duration: 0.8, repeat: Infinity }}
-                    ></motion.div>
-                    <motion.div
-                        className="bar"
-                        animate={{ height: ['30px', '50px', '30px'] }}
-                        transition={{ duration: 0.6, repeat: Infinity, delay: 0.2 }}
-                    ></motion.div>
-                    <motion.div
-                        className="bar"
-                        animate={{ height: ['25px', '45px', '25px'] }}
-                        transition={{ duration: 0.7, repeat: Infinity, delay: 0.4 }}
-                    ></motion.div>
-                    <motion.div
-                        className="bar"
-                        animate={{ height: ['20px', '40px', '20px'] }}
-                        transition={{ duration: 0.8, repeat: Infinity, delay: 0.1 }}
-                    ></motion.div>
-                    <motion.div
-                        className="bar"
-                        animate={{ height: ['28px', '48px', '28px'] }}
-                        transition={{ duration: 0.65, repeat: Infinity, delay: 0.3 }}
-                    ></motion.div>
-                </div>
 
                 {/* Tab Toggle */}
                 <div className="auth-tabs">
@@ -519,16 +499,104 @@ export default function Login({ onLoginSuccess }) {
                     </AnimatePresence>
                 </div>
 
-                {/* Info Message */}
-                <motion.p
-                    className="login-info"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 0.6, duration: 0.5 }}
-                >
-                    <span className="info-icon">🔒</span>
-                    <span className="info-text">Your data is securely stored in your browser</span>
-                </motion.p>
+                {/* Conflict Dialog */}
+                <AnimatePresence>
+                    {showConflictDialog && existingUser && (
+                        <motion.div
+                            className="conflict-dialog-overlay"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            transition={{ duration: 0.3 }}
+                        >
+                            <motion.div
+                                className="conflict-dialog"
+                                initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                                animate={{ opacity: 1, scale: 1, y: 0 }}
+                                exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                                transition={{ duration: 0.3 }}
+                            >
+                                <div className="dialog-header">
+                                    <span className="dialog-icon">⚠️</span>
+                                    <h3>Email Already Registered</h3>
+                                    <p>This email is already registered with different details. Please choose which information to keep:</p>
+                                </div>
+
+                                <div className="conflict-options">
+                                    <div className="user-option existing">
+                                        <h4>Existing User Details</h4>
+                                        <div className="user-details">
+                                            <p><strong>Name:</strong> {existingUser.userName}</p>
+                                            <p><strong>Gender:</strong> {existingUser.gender}</p>
+                                            <p><strong>Email:</strong> {existingUser.email}</p>
+                                        </div>
+                                        <motion.button
+                                            className="option-btn keep-existing"
+                                            onClick={() => {
+                                                // Keep existing user details
+                                                localStorage.setItem('musicMoodUser', JSON.stringify(existingUser))
+                                                setShowConflictDialog(false)
+                                                onLoginSuccess(existingUser)
+                                            }}
+                                            whileHover={{ scale: 1.05 }}
+                                            whileTap={{ scale: 0.95 }}
+                                        >
+                                            <span className="btn-icon">✅</span>
+                                            <span className="btn-text">Keep Existing</span>
+                                        </motion.button>
+                                    </div>
+
+                                    <div className="user-option new">
+                                        <h4>New User Details</h4>
+                                        <div className="user-details">
+                                            <p><strong>Name:</strong> {registerData.userName}</p>
+                                            <p><strong>Gender:</strong> {registerData.gender}</p>
+                                            <p><strong>Email:</strong> {registerData.email}</p>
+                                        </div>
+                                        <motion.button
+                                            className="option-btn use-new"
+                                            onClick={() => {
+                                                // Update user with new details
+                                                const updatedUser = {
+                                                    ...existingUser,
+                                                    userName: registerData.userName,
+                                                    gender: registerData.gender
+                                                }
+                                                const updatedUsers = registeredUsers.map(u =>
+                                                    u.email === registerData.email ? updatedUser : u
+                                                )
+                                                setRegisteredUsers(updatedUsers)
+                                                localStorage.setItem('musicMoodUsers', JSON.stringify(updatedUsers))
+                                                localStorage.setItem('musicMoodUser', JSON.stringify(updatedUser))
+                                                setShowConflictDialog(false)
+                                                onLoginSuccess(updatedUser)
+                                            }}
+                                            whileHover={{ scale: 1.05 }}
+                                            whileTap={{ scale: 0.95 }}
+                                        >
+                                            <span className="btn-icon">🔄</span>
+                                            <span className="btn-text">Use New Details</span>
+                                        </motion.button>
+                                    </div>
+                                </div>
+
+                                <motion.button
+                                    className="cancel-btn"
+                                    onClick={() => {
+                                        setShowConflictDialog(false)
+                                        setExistingUser(null)
+                                    }}
+                                    whileHover={{ scale: 1.05 }}
+                                    whileTap={{ scale: 0.95 }}
+                                >
+                                    <span className="btn-icon">❌</span>
+                                    <span className="btn-text">Cancel</span>
+                                </motion.button>
+                            </motion.div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
+
             </motion.div>
         </div>
     )

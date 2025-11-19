@@ -2,8 +2,9 @@
     position: fixed;
     inset: 0;
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     justify-content: center;
+    padding-top: 0.8rem;
     background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
     z-index: 1000;
@@ -82,7 +83,7 @@
     backdrop-filter: blur(20px);
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 24px;
-    padding: 2.4rem 1.4rem;
+    padding: 1.6rem 1.4rem 2.4rem 1.4rem;
     width: 100%;
     max-width: 430px;
     max-height: 95vh;
@@ -516,5 +517,193 @@
 
     .gender-text {
         font-size: 0.7rem;
+    }
+}
+
+/* Conflict Dialog Styles */
+.conflict-dialog-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(10px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+}
+
+.conflict-dialog {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 20px;
+    padding: 2rem;
+    max-width: 500px;
+    width: 90%;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), 0 0 40px rgba(124, 77, 255, 0.2);
+}
+
+.dialog-header {
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+.dialog-icon {
+    font-size: 2rem;
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+.dialog-header h3 {
+    color: #ffffff;
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin: 0.5rem 0;
+    background: linear-gradient(135deg, #7c4dff 0%, #00e5ff 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.dialog-header p {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+.conflict-options {
+    display: flex;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+    justify-content: center;
+    align-items: stretch;
+}
+
+.user-option {
+    flex: 1;
+    max-width: 200px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 1rem;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.user-option h4 {
+    color: #ffffff;
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 0.8rem;
+    background: linear-gradient(135deg, #7c4dff 0%, #00e5ff 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.user-details {
+    margin-bottom: 1rem;
+    flex-grow: 1;
+}
+
+.user-details p {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.85rem;
+    margin: 0.3rem 0;
+    text-align: left;
+}
+
+.user-details strong {
+    color: #ffffff;
+}
+
+.option-btn {
+    width: 100%;
+    padding: 0.8rem 1rem;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    text-decoration: none;
+    letter-spacing: 0.3px;
+    margin-top: auto;
+}
+
+.keep-existing {
+    background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+    color: #ffffff;
+    box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+}
+
+.keep-existing:hover {
+    background: linear-gradient(135deg, #45a049 0%, #4CAF50 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
+}
+
+.use-new {
+    background: linear-gradient(135deg, #FF9800 0%, #F57C00 100%);
+    color: #ffffff;
+    box-shadow: 0 4px 15px rgba(255, 152, 0, 0.3);
+}
+
+.use-new:hover {
+    background: linear-gradient(135deg, #F57C00 0%, #FF9800 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255, 152, 0, 0.4);
+}
+
+.cancel-btn {
+    width: 100%;
+    padding: 0.7rem 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.05);
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.cancel-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.5);
+    transform: translateY(-1px);
+}
+
+@media (max-width: 768px) {
+    .conflict-dialog {
+        padding: 1.5rem;
+        max-width: 95%;
+    }
+
+    .conflict-options {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .user-option {
+        padding: 0.8rem;
+    }
+
+    .dialog-header h3 {
+        font-size: 1.1rem;
+    }
+
+    .dialog-header p {
+        font-size: 0.85rem;
     }
 }
