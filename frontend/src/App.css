@@ -128,6 +128,39 @@ body {
   }
 }
 
+/* Security Alert */
+.security-alert {
+  position: fixed;
+  top: 1rem;
+  left: 60%;
+  transform: translateX(-50%);
+  z-index: 200;
+}
+
+.alert-background {
+  background: linear-gradient(135deg, rgba(123, 77, 255, 0.95), rgba(0, 229, 255, 0.8));
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 50px;
+  padding: 1rem 1.8rem;
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  box-shadow: 0 10px 40px rgba(124, 77, 255, 0.3), 0 0 20px rgba(0, 229, 255, 0.2);
+}
+
+.alert-icon {
+  font-size: 1.2rem;
+  flex-shrink: 0;
+}
+
+.alert-text {
+  color: #ffffff;
+  font-size: 0.95rem;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+}
+
 /* Navbar */
 .navbar {
   position: sticky;
@@ -419,7 +452,7 @@ body {
 
 .app-header {
   text-align: center;
-  padding: 3rem 2rem 1rem;
+  padding: 1.2rem 1.5rem 0.2rem;
   max-width: 1200px;
   margin: 0 auto;
   width: 100%;
@@ -428,7 +461,7 @@ body {
 }
 
 .app-header h2 {
-  font-size: 2.5rem;
+  font-size: 2rem;
   margin-bottom: 0.5rem;
   background: linear-gradient(135deg, #FFD700, #FF1493, #00e5ff, #7c4dff);
   -webkit-background-clip: text;
@@ -442,7 +475,7 @@ body {
 
 .subtitle {
   color: var(--text-muted);
-  font-size: 1.1rem;
+  font-size: 0.95rem;
   font-weight: 500;
   letter-spacing: 0.5px;
 }
@@ -450,10 +483,10 @@ body {
 /* Moods Section */
 .moods {
   display: flex;
-  gap: 1rem;
+  gap: 0.8rem;
   justify-content: center;
   flex-wrap: wrap;
-  padding: 2rem;
+  padding: 1rem 1.5rem;
   max-width: 1200px;
   margin: 0 auto;
   position: relative;
@@ -464,14 +497,14 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.5rem;
-  padding: 1.2rem 1.8rem;
-  border-radius: 16px;
+  gap: 0.3rem;
+  padding: 0.9rem 1.3rem;
+  border-radius: 14px;
   border: 2px solid rgba(255, 255, 255, 0.2);
   background: rgba(255, 255, 255, 0.05);
   color: var(--text-light);
   cursor: pointer;
-  font-size: 0.95rem;
+  font-size: 0.85rem;
   font-weight: 600;
   transition: all 0.3s ease;
   position: relative;
@@ -526,8 +559,8 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 2rem;
-  padding: 1.5rem 2rem;
+  gap: 1.5rem;
+  padding: 0.8rem 1.5rem;
   max-width: 1200px;
   margin: 0 auto;
   flex-wrap: wrap;
@@ -589,24 +622,25 @@ body {
 /* Songs Area */
 .songs-area {
   flex: 1;
-  padding: 2rem;
+  padding: 1rem 1.5rem;
   max-width: 1200px;
   margin: 0 auto;
   width: 100%;
   position: relative;
   z-index: 2;
+  overflow-y: auto;
 }
 
 .hint {
   text-align: center;
   color: var(--text-muted);
-  font-size: 1.1rem;
-  padding: 3rem 1rem;
+  font-size: 1rem;
+  padding: 1.5rem 1rem;
 }
 
 .mood-title {
-  font-size: 1.8rem;
-  margin-bottom: 1.5rem;
+  font-size: 1.5rem;
+  margin-bottom: 0.8rem;
   display: flex;
   align-items: center;
   gap: 0.8rem;
