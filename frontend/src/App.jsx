@@ -279,7 +279,7 @@ function App() {
                         </h2>
                         <div className="songs-grid">
                           {getSongsByMood(currentMood).map((s, i) => {
-                            const id = `${currentMood}-${i}`
+                            const id = `${currentMood}-${s.title}-${s.artist}-${s.language}`
                             const isFav = favorites.some(f => f.id === id)
                             return (
                               <motion.div
