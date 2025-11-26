@@ -50,10 +50,10 @@ export default function ProfileNav({ user, onClose }) {
                 <motion.div
                     className="profile-nav-panel"
                     onClick={(e) => e.stopPropagation()}
-                    initial={{ x: 400, opacity: 0 }}
-                    animate={{ x: 0, opacity: 1 }}
-                    exit={{ x: 400, opacity: 0 }}
-                    transition={{ duration: 0.3 }}
+                    initial={{ scale: 0.95, opacity: 0, y: 20 }}
+                    animate={{ scale: 1, opacity: 1, y: 0 }}
+                    exit={{ scale: 0.95, opacity: 0, y: 20 }}
+                    transition={{ duration: 0.3, type: 'spring', stiffness: 300, damping: 30 }}
                 >
                     {/* Header */}
                     <div className="profile-header">
@@ -80,6 +80,9 @@ export default function ProfileNav({ user, onClose }) {
                         </div>
                         <h3 className="profile-name">{user?.userName || 'User'}</h3>
                         <p className="profile-email-main">{user?.email || 'No email'}</p>
+                        <p className="profile-gender-main">
+                            <span className="gender-badge">{getGenderAvatar(user?.gender)} {user?.gender?.charAt(0).toUpperCase() + user?.gender?.slice(1) || 'Not specified'}</span>
+                        </p>
                         <div className="profile-badge">
                             {user?.isVerified ? (
                                 <>
@@ -94,6 +97,25 @@ export default function ProfileNav({ user, onClose }) {
                             )}
                         </div>
                     </motion.div>
+
+                    {/* Verification Notice for Unverified Users */}
+                    {!user?.isVerified && (
+                        <motion.div
+                            className="verification-notice"
+                            initial={{ opacity: 0, y: -10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.15 }}
+                        >
+                            <span className="notice-icon">⏳</span>
+                            <div className="notice-content">
+                                <p className="notice-title">Account Pending Verification</p>
+                                <p className="notice-text">Please check your email for the verification code to complete your registration.</p>
+                                <p className="notice-code" style={{ marginTop: '0.5rem', fontSize: '0.85rem', color: '#00e5ff' }}>
+                                    Code: {user?.verificationCode || 'Check your email'}
+                                </p>
+                            </div>
+                        </motion.div>
+                    )}
 
                     {/* Sections */}
                     <div className="profile-sections">

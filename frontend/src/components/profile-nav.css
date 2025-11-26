@@ -2,13 +2,14 @@
 .profile-nav-overlay {
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.4);
+    background: rgba(0, 0, 0, 0.5);
     backdrop-filter: blur(4px);
     display: flex;
-    justify-content: flex-end;
+    justify-content: center;
     align-items: center;
     z-index: 1000;
     animation: fadeIn 0.3s ease-out;
+    padding: 1rem;
 }
 
 @keyframes fadeIn {
@@ -23,25 +24,27 @@
 
 .profile-nav-panel {
     width: 100%;
-    max-width: 450px;
-    height: 100vh;
+    max-width: 500px;
+    max-height: 90vh;
     background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-    box-shadow: -8px 0 32px rgba(124, 77, 255, 0.15);
+    box-shadow: 0 20px 60px rgba(124, 77, 255, 0.3);
     overflow-y: auto;
     display: flex;
     flex-direction: column;
-    animation: slideInRight 0.3s ease-out;
+    animation: slideInCenter 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
     color: #f7f7f7;
+    border-radius: 16px;
+    border: 1px solid rgba(124, 77, 255, 0.2);
 }
 
-@keyframes slideInRight {
+@keyframes slideInCenter {
     from {
-        transform: translateX(100%);
+        transform: scale(0.95) translateY(20px);
         opacity: 0;
     }
 
     to {
-        transform: translateX(0);
+        transform: scale(1) translateY(0);
         opacity: 1;
     }
 }
@@ -142,36 +145,63 @@
 }
 
 .profile-email-main {
-    margin: 0 0 1rem;
+    margin: 0 0 0.5rem;
     font-size: 0.95rem;
     color: #b0b0b0;
+}
+
+.profile-gender-main {
+    margin: 0 0 1rem;
+    font-size: 0.9rem;
+}
+
+.gender-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, rgba(124, 77, 255, 0.2), rgba(0, 229, 255, 0.1));
+    color: #00e5ff;
+    padding: 0.4rem 0.8rem;
+    border-radius: 20px;
+    font-weight: 500;
+    border: 1px solid rgba(0, 229, 255, 0.3);
 }
 
 .profile-badge {
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
-    background: #f0f0f0;
     padding: 0.5rem 1rem;
     border-radius: 20px;
     font-size: 0.9rem;
     font-weight: 500;
+    border: 1px solid;
 }
 
 .verified-icon {
     color: #4caf50;
+    font-size: 1.1rem;
 }
 
 .verified-text {
-    color: #2e7d32;
+    color: #81c784;
+    font-weight: 600;
+    background: linear-gradient(135deg, rgba(76, 175, 80, 0.15), rgba(0, 229, 255, 0.05));
+    padding: 0.3rem 0.8rem;
+    border-radius: 15px;
+    border: 1px solid rgba(76, 175, 80, 0.3);
 }
 
 .unverified-icon {
     color: #ff9800;
+    font-size: 1.1rem;
 }
 
 .unverified-text {
-    color: #e65100;
+    color: #ffb74d;
+    font-weight: 600;
+    background: linear-gradient(135deg, rgba(255, 152, 0, 0.15), rgba(255, 69, 0, 0.05));
+    padding: 0.3rem 0.8rem;
+    border-radius: 15px;
+    border: 1px solid rgba(255, 152, 0, 0.3);
 }
 
 /* Profile Sections */
@@ -420,4 +450,48 @@
         text-align: left;
         margin-left: 0;
     }
+}
+
+/* Verification Notice */
+.verification-notice {
+    background: linear-gradient(135deg, rgba(255, 152, 0, 0.15), rgba(255, 193, 7, 0.1));
+    border: 1px solid rgba(255, 152, 0, 0.3);
+    border-left: 4px solid #ff9800;
+    margin: 0 1.5rem 1rem;
+    padding: 1rem;
+    border-radius: 8px;
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+}
+
+.notice-icon {
+    font-size: 1.5rem;
+    flex-shrink: 0;
+}
+
+.notice-content {
+    flex: 1;
+}
+
+.notice-title {
+    margin: 0 0 0.25rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #ffb74d;
+}
+
+.notice-text {
+    margin: 0;
+    font-size: 0.85rem;
+    color: #b0b0b0;
+    line-height: 1.4;
+}
+
+.notice-code {
+    font-family: 'Courier New', monospace;
+    margin: 0.5rem 0 0;
+    padding: 0.4rem 0.6rem;
+    background: rgba(0, 229, 255, 0.1);
+    border-radius: 4px;
 }
