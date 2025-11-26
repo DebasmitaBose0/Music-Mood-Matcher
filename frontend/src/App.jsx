@@ -10,7 +10,7 @@ import ProfileNav from './components/ProfileNav'
 import './App.css'
 
 function App() {
-  const { user, login, logout, isLoading: authLoading } = useAuth()
+  const { user, login, logout, updateUser, isLoading: authLoading } = useAuth()
   const [showLoader, setShowLoader] = useState(true)
   const [currentMood, setCurrentMood] = useState(null)
   const [activeTab, setActiveTab] = useState('home')
@@ -155,7 +155,7 @@ function App() {
             <div className="app-root">
               {/* Profile Navigation Sidebar */}
               {showProfileNav && (
-                <ProfileNav user={user} onClose={() => setShowProfileNav(false)} />
+                <ProfileNav user={user} onClose={() => setShowProfileNav(false)} onUpdateUser={updateUser} />
               )}
 
               {/* Security Alert */}
