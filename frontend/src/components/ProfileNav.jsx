@@ -4,7 +4,7 @@ import PropTypes from 'prop-types'
 import emailjs from '@emailjs/browser'
 import './profile-nav.css'
 
-export default function ProfileNav({ user, onClose, onUpdateUser }) {
+export default function ProfileNav({ user, onClose, onUpdateUser, onLogout }) {
     const [expandedSection, setExpandedSection] = useState(null)
     const [isEditingName, setIsEditingName] = useState(false)
     const [editedName, setEditedName] = useState(user?.userName || '')
@@ -15,6 +15,12 @@ export default function ProfileNav({ user, onClose, onUpdateUser }) {
     const [verificationError, setVerificationError] = useState('')
     const [newEmail, setNewEmail] = useState('')
     const [newVerificationCode, setNewVerificationCode] = useState('')
+    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
+    const [deleteConfirmText, setDeleteConfirmText] = useState('')
+    const [showEmailVerificationDialog, setShowEmailVerificationDialog] = useState(false)
+    const [emailVerificationCode, setEmailVerificationCode] = useState('')
+    const [emailVerificationError, setEmailVerificationError] = useState('')
+    const [emailVerificationSent, setEmailVerificationSent] = useState(false)
 
     // Initialize EmailJS
     useEffect(() => {
@@ -37,13 +43,21 @@ export default function ProfileNav({ user, onClose, onUpdateUser }) {
                 return false
             }
 
+            // Template variables with multiple names for compatibility
             const templateParams = {
                 to_email: email,
+                recipient_email: email,
+                email_address: email,
                 user_name: userName,
-                verification_code: verificationCode
+                verification_code: verificationCode,
+                code: verificationCode
             }
 
-            console.log('📧 Sending verification email to:', email)
+            console.log('📧 Sending verification email')
+            console.log('Recipient Email (to_email):', email)
+            console.log('User Name:', userName)
+            console.log('Verification Code:', verificationCode)
+
             const response = await emailjs.send(
                 SERVICE_ID,
                 TEMPLATE_ID,
@@ -51,13 +65,13 @@ export default function ProfileNav({ user, onClose, onUpdateUser }) {
                 PUBLIC_KEY
             )
 
-            console.log('✅ Email sent successfully to:', email)
+            console.log('✅ Email sent successfully!')
             return true
 
         } catch (error) {
             console.error('❌ Error sending verification email:', error.message)
             if (error.status === 400) {
-                console.error('Bad Request - Template variables: to_email, user_name, verification_code')
+                console.error('Bad Request - Check template uses: {{to_email}}, {{user_name}}, {{verification_code}}')
             } else if (error.status === 401) {
                 console.error('Unauthorized - Check public key')
             } else if (error.status === 404) {
@@ -98,7 +112,7 @@ export default function ProfileNav({ user, onClose, onUpdateUser }) {
             onUpdateUser(updatedUser)
             setIsEditingName(false)
             setVerificationError('')
-            
+
             // Show success message via error state (acts as info message)
             setTimeout(() => {
                 setVerificationError('Profile updated successfully')
@@ -124,15 +138,15 @@ export default function ProfileNav({ user, onClose, onUpdateUser }) {
                 isVerified: true,
                 emailVerified: true  // Mark email as verified
             }
-            
+
             console.log('Email verified successfully:', newEmail)
-            
+
             onUpdateUser(updatedUser)
             setShowVerificationDialog(false)
             setVerificationInputCode('')
             setIsEditingName(false)
             setNewEmail('')
-            
+
             // Show success message
             setVerificationError('Email verified and profile updated!')
             setTimeout(() => setVerificationError(''), 3000)
@@ -180,6 +194,87 @@ export default function ProfileNav({ user, onClose, onUpdateUser }) {
         setExpandedSection(expandedSection === section ? null : section)
     }
 
+    const handleSendVerificationEmail = async () => {
+        if (!user?.email) {
+            setEmailVerificationError('User email not found')
+            return
+        }
+
+        const code = generateVerificationCode()
+        setEmailVerificationCode(code)
+        setEmailVerificationError('')
+        setEmailVerificationSent(true)
+
+        // Send verification email
+        await sendVerificationEmail(user.email, user.userName, code)
+        console.log('Verification email sent to:', user.email)
+    }
+
+    const handleVerifyEmail = () => {
+        if (!emailVerificationCode.trim()) {
+            setEmailVerificationError('Please enter the verification code')
+            return
+        }
+
+        if (emailVerificationCode.toUpperCase() === emailVerificationCode) {
+            // Verification successful
+            const updatedUser = {
+                ...user,
+                isVerified: true,
+                emailVerified: true
+            }
+
+            onUpdateUser(updatedUser)
+            setShowEmailVerificationDialog(false)
+            setEmailVerificationCode('')
+            setEmailVerificationError('')
+            setEmailVerificationSent(false)
+
+            // Show success message
+            setTimeout(() => {
+                setEmailVerificationError('Email verified successfully! ✅')
+                setTimeout(() => setEmailVerificationError(''), 3000)
+            }, 500)
+        } else {
+            setEmailVerificationError('Invalid verification code. Please check your email.')
+        }
+    }
+
+    const handleDeleteAccount = () => {
+        // Verify user typed "DELETE"
+        if (deleteConfirmText.toUpperCase() !== 'DELETE') {
+            setVerificationError('Please type "DELETE" to confirm account deletion')
+            return
+        }
+
+        // Get all registered users from localStorage
+        const registeredUsers = JSON.parse(localStorage.getItem('musicMoodUsers') || '[]')
+
+        // Remove current user from the list
+        const updatedUsers = registeredUsers.filter(u => u.email !== user?.email)
+
+        // Update localStorage with remaining users
+        localStorage.setItem('musicMoodUsers', JSON.stringify(updatedUsers))
+
+        // Remove current user session
+        localStorage.removeItem('musicMoodUser')
+
+        console.log('✅ Account permanently deleted for:', user?.email)
+        console.log('⚠️ User can re-register with the same email')
+
+        // Close all dialogs
+        setShowDeleteConfirm(false)
+        setDeleteConfirmText('')
+
+        // Logout and redirect to login page
+        if (onLogout) {
+            onLogout()
+        } else {
+            // Fallback if onLogout is not provided
+            onClose()
+        }
+    }
+
     return (
         <AnimatePresence>
             <div className="profile-nav-overlay" onClick={onClose}>
@@ -216,21 +311,23 @@ export default function ProfileNav({ user, onClose, onUpdateUser }) {
                         </div>
                         <h3 className="profile-name">{user?.userName || 'User'}</h3>
                         <p className="profile-email-main">{user?.email || 'No email'}</p>
-                        <p className="profile-gender-main">
-                            <span className="gender-badge">{getGenderAvatar(user?.gender)} {user?.gender?.charAt(0).toUpperCase() + user?.gender?.slice(1) || 'Not specified'}</span>
-                        </p>
-                        <div className="profile-badge">
-                            {user?.isVerified ? (
-                                <>
-                                    <span className="verified-icon">✅</span>
-                                    <span className="verified-text">Verified User</span>
-                                </>
-                            ) : (
-                                <>
-                                    <span className="unverified-icon">⏳</span>
-                                    <span className="unverified-text">Pending Verification</span>
-                                </>
-                            )}
+                        <div className="profile-gender-verified-row">
+                            <p className="profile-gender-main">
+                                <span className="gender-badge">{getGenderAvatar(user?.gender)} {user?.gender?.charAt(0).toUpperCase() + user?.gender?.slice(1) || 'Not specified'}</span>
+                            </p>
+                            <div className="profile-badge">
+                                {user?.isVerified ? (
+                                    <>
+                                        <span className="verified-icon">✅</span>
+                                        <span className="verified-text">Verified User</span>
+                                    </>
+                                ) : (
+                                    <>
+                                        <span className="unverified-icon">⏳</span>
+                                        <span className="unverified-text">Pending Verification</span>
+                                    </>
+                                )}
+                            </div>
                         </div>
                     </motion.div>
 
@@ -246,9 +343,20 @@ export default function ProfileNav({ user, onClose, onUpdateUser }) {
                             <div className="notice-content">
                                 <p className="notice-title">Account Pending Verification</p>
                                 <p className="notice-text">Please check your email for the verification code to complete your registration.</p>
-                                <p className="notice-code" style={{ marginTop: '0.5rem', fontSize: '0.85rem', color: '#00e5ff' }}>
-                                    Code: {user?.verificationCode || 'Check your email'}
-                                </p>
+                                <motion.button
+                                    className="verify-email-btn"
+                                    onClick={() => {
+                                        setShowEmailVerificationDialog(true)
+                                        setEmailVerificationError('')
+                                        setEmailVerificationCode('')
+                                    }}
+                                    whileHover={{ scale: 1.05 }}
+                                    whileTap={{ scale: 0.95 }}
+                                    style={{ marginTop: '1rem', padding: '12px 16px', width: 'auto', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                                >
+                                    <span style={{ fontSize: '1rem', marginRight: '0.5rem' }}>✅</span>
+                                    <span>Enter Verification Code</span>
+                                </motion.button>
                             </div>
                         </motion.div>
                     )}
@@ -345,7 +453,7 @@ export default function ProfileNav({ user, onClose, onUpdateUser }) {
                                                         whileHover={{ scale: 1.05 }}
                                                         whileTap={{ scale: 0.95 }}
                                                         style={{
-                                                            padding: '8px 16px',
+                                                            padding: '12px 16px',
                                                             background: 'linear-gradient(135deg, #00e5ff, #7c4dff)',
                                                             border: 'none',
                                                             borderRadius: '8px',
@@ -368,7 +476,7 @@ export default function ProfileNav({ user, onClose, onUpdateUser }) {
                                                         whileHover={{ scale: 1.05 }}
                                                         whileTap={{ scale: 0.95 }}
                                                         style={{
-                                                            padding: '8px 16px',
+                                                            padding: '12px 16px',
                                                             background: 'rgba(255, 107, 107, 0.2)',
                                                             border: '1px solid rgba(255, 107, 107, 0.5)',
                                                             borderRadius: '8px',
@@ -388,7 +496,7 @@ export default function ProfileNav({ user, onClose, onUpdateUser }) {
                                                     whileHover={{ scale: 1.05 }}
                                                     whileTap={{ scale: 0.95 }}
                                                     style={{
-                                                        padding: '8px 16px',
+                                                        padding: '12px 16px',
                                                         background: 'rgba(124, 77, 255, 0.2)',
                                                         border: '1px solid rgba(124, 77, 255, 0.5)',
                                                         borderRadius: '8px',
@@ -443,7 +551,7 @@ export default function ProfileNav({ user, onClose, onUpdateUser }) {
                                                 {user?.isVerified ? '✓ Verified' : '⏳ Pending'}
                                             </span>
                                         </div>
-                                        {user?.verificationCode && (
+                                        {user?.isVerified && user?.verificationCode && (
                                             <div className="info-row">
                                                 <span className="info-label">🔐 Verification Code:</span>
                                                 <span className="info-value info-code">{user.verificationCode}</span>
@@ -564,18 +672,71 @@ export default function ProfileNav({ user, onClose, onUpdateUser }) {
                                 )}
                             </AnimatePresence>
                         </motion.div>
+
+                        {/* Delete Account Section */}
+                        <motion.div
+                            className="profile-section"
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.35 }}
+                        >
+                            <motion.button
+                                className={`section-toggle danger ${expandedSection === 'delete' ? 'active' : ''}`}
+                                onClick={() => toggleSection('delete')}
+                                whileHover={{ backgroundColor: 'rgba(255, 107, 107, 0.05)' }}
+                            >
+                                <span className="toggle-icon">🗑️</span>
+                                <span className="toggle-title" style={{ color: '#ff6b6b' }}>Delete Account</span>
+                                <span className={`toggle-arrow ${expandedSection === 'delete' ? 'open' : ''}`}>›</span>
+                            </motion.button>
+
+                            <AnimatePresence>
+                                {expandedSection === 'delete' && (
+                                    <motion.div
+                                        className="section-content"
+                                        initial={{ opacity: 0, height: 0 }}
+                                        animate={{ opacity: 1, height: 'auto' }}
+                                        exit={{ opacity: 0, height: 0 }}
+                                        transition={{ duration: 0.2 }}
+                                    >
+                                        <div style={{
+                                            background: 'rgba(255, 107, 107, 0.08)',
+                                            border: '1px solid rgba(255, 107, 107, 0.3)',
+                                            borderRadius: '8px',
+                                            padding: '1rem',
+                                            marginBottom: '1rem'
+                                        }}>
+                                            <p style={{ color: '#ff6b6b', fontWeight: '600', margin: '0 0 0.5rem' }}>
+                                                ⚠️ Warning: This action cannot be undone
+                                            </p>
+                                            <p style={{ color: '#b0b0b0', margin: '0', fontSize: '0.9rem', lineHeight: '1.4' }}>
+                                                Deleting your account will permanently remove all your profile data. However, you can re-register with the same email address anytime.
+                                            </p>
+                                        </div>
+
+                                        <motion.button
+                                            onClick={() => setShowDeleteConfirm(true)}
+                                            whileHover={{ scale: 1.05 }}
+                                            whileTap={{ scale: 0.95 }}
+                                            style={{
+                                                width: '100%',
+                                                padding: '12px',
+                                                background: 'rgba(255, 107, 107, 0.2)',
+                                                border: '1px solid rgba(255, 107, 107, 0.5)',
+                                                borderRadius: '8px',
+                                                color: '#ff6b6b',
+                                                cursor: 'pointer',
+                                                fontWeight: '600'
+                                            }}
+                                        >
+                                            🗑️ Delete My Account
+                                        </motion.button>
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
+                        </motion.div>
                     </div>
 
-                    {/* Footer Note */}
-                    <motion.div
-                        className="profile-footer-note"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ delay: 0.35 }}
-                    >
-                        <span className="note-icon">💡</span>
-                        <span className="note-text">Your profile data helps personalize your experience</span>
-                    </motion.div>
                 </motion.div>
 
                 {/* Email Verification Dialog */}
@@ -717,6 +878,243 @@ export default function ProfileNav({ user, onClose, onUpdateUser }) {
                         </motion.div>
                     )}
                 </AnimatePresence>
+
+                {/* Delete Confirmation Dialog */}
+                <AnimatePresence>
+                    {showDeleteConfirm && (
+                        <motion.div
+                            className="conflict-dialog-overlay"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            transition={{ duration: 0.3 }}
+                            onClick={() => setShowDeleteConfirm(false)}
+                        >
+                            <motion.div
+                                className="conflict-dialog"
+                                initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                                animate={{ opacity: 1, scale: 1, y: 0 }}
+                                exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                                transition={{ duration: 0.3 }}
+                                onClick={(e) => e.stopPropagation()}
+                                style={{ maxWidth: '500px' }}
+                            >
+                                <div className="dialog-header" style={{ borderBottomColor: 'rgba(255, 107, 107, 0.3)' }}>
+                                    <span className="dialog-icon" style={{ fontSize: '2rem' }}>⚠️</span>
+                                    <h3 style={{ color: '#ff6b6b' }}>Delete Account</h3>
+                                    <p>This action is permanent and cannot be undone.</p>
+                                </div>
+
+                                <div style={{ padding: '2rem' }}>
+                                    <div style={{
+                                        background: 'rgba(255, 107, 107, 0.08)',
+                                        border: '1px solid rgba(255, 107, 107, 0.3)',
+                                        borderRadius: '8px',
+                                        padding: '1rem',
+                                        marginBottom: '1.5rem'
+                                    }}>
+                                        <p style={{ color: '#ff6b6b', fontWeight: '600', margin: '0 0 0.5rem' }}>What will happen:</p>
+                                        <ul style={{ margin: '0.5rem 0 0', paddingLeft: '1.5rem', color: '#b0b0b0', fontSize: '0.9rem' }}>
+                                            <li>Your profile data will be permanently deleted</li>
+                                            <li>Login history and preferences will be removed</li>
+                                            <li>You can re-register with the same email anytime</li>
+                                        </ul>
+                                    </div>
+
+                                    <p style={{ color: '#b0b0b0', marginBottom: '1rem', fontSize: '0.9rem' }}>
+                                        To confirm, type <strong>DELETE</strong> in the field below:
+                                    </p>
+
+                                    <input
+                                        type="text"
+                                        placeholder='Type "DELETE" to confirm'
+                                        value={deleteConfirmText}
+                                        onChange={(e) => {
+                                            setDeleteConfirmText(e.target.value)
+                                            setVerificationError('')
+                                        }}
+                                        style={{
+                                            width: '100%',
+                                            padding: '12px',
+                                            background: 'rgba(255, 255, 255, 0.05)',
+                                            border: '1px solid rgba(255, 107, 107, 0.3)',
+                                            borderRadius: '8px',
+                                            color: '#fff',
+                                            marginBottom: '1rem',
+                                            fontSize: '1rem'
+                                        }}
+                                    />
+
+                                    {verificationError && (
+                                        <motion.div
+                                            initial={{ opacity: 0, x: -20 }}
+                                            animate={{ opacity: 1, x: 0 }}
+                                            transition={{ duration: 0.3 }}
+                                            style={{
+                                                background: 'rgba(255, 107, 107, 0.1)',
+                                                border: '1px solid rgba(255, 107, 107, 0.3)',
+                                                borderRadius: '8px',
+                                                padding: '12px',
+                                                marginBottom: '1rem',
+                                                color: '#ff6b6b',
+                                                fontSize: '0.9rem'
+                                            }}
+                                        >
+                                            <span>⚠️ {verificationError}</span>
+                                        </motion.div>
+                                    )}
+
+                                    <div style={{ display: 'flex', gap: '10px' }}>
+                                        <motion.button
+                                            onClick={handleDeleteAccount}
+                                            whileHover={{ scale: 1.05 }}
+                                            whileTap={{ scale: 0.95 }}
+                                            style={{
+                                                flex: 1,
+                                                padding: '12px',
+                                                background: 'rgba(255, 107, 107, 0.3)',
+                                                border: '1px solid rgba(255, 107, 107, 0.5)',
+                                                borderRadius: '8px',
+                                                color: '#ff6b6b',
+                                                cursor: 'pointer',
+                                                fontWeight: '600'
+                                            }}
+                                        >
+                                            🗑️ Delete My Account
+                                        </motion.button>
+                                        <motion.button
+                                            onClick={() => {
+                                                setShowDeleteConfirm(false)
+                                                setDeleteConfirmText('')
+                                                setVerificationError('')
+                                            }}
+                                            whileHover={{ scale: 1.05 }}
+                                            whileTap={{ scale: 0.95 }}
+                                            style={{
+                                                flex: 1,
+                                                padding: '12px',
+                                                background: 'rgba(124, 77, 255, 0.2)',
+                                                border: '1px solid rgba(124, 77, 255, 0.5)',
+                                                borderRadius: '8px',
+                                                color: '#7c4dff',
+                                                cursor: 'pointer',
+                                                fontWeight: '600'
+                                            }}
+                                        >
+                                            ❌ Cancel
+                                        </motion.button>
+                                    </div>
+                                </div>
+                            </motion.div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
+
+                {/* Email Verification Dialog */}
+                <AnimatePresence>
+                    {showEmailVerificationDialog && (
+                        <motion.div
+                            className="profile-overlay"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            transition={{ duration: 0.2 }}
+                            onClick={() => setShowEmailVerificationDialog(false)}
+                        >
+                            <motion.div
+                                className="profile-dialog"
+                                initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                                animate={{ opacity: 1, scale: 1, y: 0 }}
+                                exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                                transition={{ duration: 0.2 }}
+                                onClick={(e) => e.stopPropagation()}
+                            >
+                                <h3 style={{ margin: '0 0 1rem', color: '#7c4dff' }}>✅ Verify Your Email</h3>
+
+                                {emailVerificationError && (
+                                    <motion.div
+                                        initial={{ opacity: 0 }}
+                                        animate={{ opacity: 1 }}
+                                        transition={{ duration: 0.2 }}
+                                        style={{
+                                            background: emailVerificationError.includes('successfully') ? 'rgba(76, 175, 80, 0.1)' : 'rgba(255, 107, 107, 0.1)',
+                                            border: emailVerificationError.includes('successfully') ? '1px solid rgba(76, 175, 80, 0.3)' : '1px solid rgba(255, 107, 107, 0.3)',
+                                            borderRadius: '8px',
+                                            padding: '12px',
+                                            marginBottom: '1rem',
+                                            color: emailVerificationError.includes('successfully') ? '#4caf50' : '#ff6b6b',
+                                            fontSize: '0.9rem'
+                                        }}
+                                    >
+                                        <span>{emailVerificationError}</span>
+                                    </motion.div>
+                                )}
+
+                                <p style={{ margin: '0 0 1rem', color: '#aaa', fontSize: '0.9rem' }}>
+                                    📧 A verification code has been sent to <strong>{user?.email}</strong>
+                                </p>
+
+                                <input
+                                    type="text"
+                                    placeholder="Enter 6-digit verification code"
+                                    value={emailVerificationCode}
+                                    onChange={(e) => setEmailVerificationCode(e.target.value.toUpperCase())}
+                                    maxLength="6"
+                                    style={{
+                                        width: '100%',
+                                        padding: '12px',
+                                        background: 'rgba(255, 255, 255, 0.05)',
+                                        border: '1px solid rgba(124, 77, 255, 0.3)',
+                                        borderRadius: '8px',
+                                        color: '#fff',
+                                        fontSize: '1.2rem',
+                                        textAlign: 'center',
+                                        letterSpacing: '2px',
+                                        marginBottom: '1.5rem',
+                                        fontFamily: 'monospace'
+                                    }}
+                                />
+
+                                <div style={{ display: 'flex', gap: '10px' }}>
+                                    <motion.button
+                                        onClick={handleVerifyEmail}
+                                        whileHover={{ scale: 1.05 }}
+                                        whileTap={{ scale: 0.95 }}
+                                        style={{
+                                            flex: 1,
+                                            padding: '12px',
+                                            background: 'linear-gradient(135deg, #7c4dff 0%, #00e5ff 100%)',
+                                            border: 'none',
+                                            borderRadius: '8px',
+                                            color: '#fff',
+                                            cursor: 'pointer',
+                                            fontWeight: '600'
+                                        }}
+                                    >
+                                        ✅ Verify
+                                    </motion.button>
+                                    <motion.button
+                                        onClick={() => setShowEmailVerificationDialog(false)}
+                                        whileHover={{ scale: 1.05 }}
+                                        whileTap={{ scale: 0.95 }}
+                                        style={{
+                                            flex: 1,
+                                            padding: '12px',
+                                            background: 'rgba(124, 77, 255, 0.1)',
+                                            border: '1px solid rgba(124, 77, 255, 0.3)',
+                                            borderRadius: '8px',
+                                            color: '#7c4dff',
+                                            cursor: 'pointer',
+                                            fontWeight: '600'
+                                        }}
+                                    >
+                                        ❌ Cancel
+                                    </motion.button>
+                                </div>
+                            </motion.div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
             </div>
         </AnimatePresence>
     )
@@ -734,5 +1132,6 @@ ProfileNav.propTypes = {
         verificationCode: PropTypes.string
     }).isRequired,
     onClose: PropTypes.func.isRequired,
-    onUpdateUser: PropTypes.func.isRequired
+    onUpdateUser: PropTypes.func.isRequired,
+    onLogout: PropTypes.func
 }
