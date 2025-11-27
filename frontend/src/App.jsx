@@ -17,17 +17,7 @@ function App() {
   const [selectedLanguage, setSelectedLanguage] = useState('all')
   const [favorites, setFavorites] = useState([])
   const [moodHistory, setMoodHistory] = useState([])
-  const [showSecurityAlert, setShowSecurityAlert] = useState(false)
   const [showProfileNav, setShowProfileNav] = useState(false)
-
-  // Show security alert when user logs in
-  useEffect(() => {
-    if (user?.userId) {
-      setShowSecurityAlert(true)
-      const timer = setTimeout(() => setShowSecurityAlert(false), 4000)
-      return () => clearTimeout(timer)
-    }
-  }, [user?.userId])
 
   // Load user-specific favorites when user changes
   useEffect(() => {
@@ -155,29 +145,10 @@ function App() {
             <div className="app-root">
               {/* Profile Navigation Sidebar */}
               {showProfileNav && (
-                <ProfileNav user={user} onClose={() => setShowProfileNav(false)} onUpdateUser={updateUser} />
-              )}
-
-              {/* Security Alert */}
-              {showSecurityAlert && (
-                <motion.div
-                  className="security-alert"
-                  initial={{ opacity: 0, y: -20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -20 }}
-                  transition={{ duration: 0.3 }}
-                >
-                  <motion.div
-                    className="alert-background"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    transition={{ duration: 0.3 }}
-                  >
-                    <span className="alert-icon">🔒</span>
-                    <span className="alert-text">Your data is securely stored in your browser</span>
-                  </motion.div>
-                </motion.div>
+                <ProfileNav user={user} onClose={() => setShowProfileNav(false)} onUpdateUser={updateUser} onLogout={() => {
+                  logout()
+                  setShowProfileNav(false)
+                }} />
               )}
 
               {/* Background animated elements - Only music notes */}
